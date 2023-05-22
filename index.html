@@ -14,7 +14,7 @@
     <div id="info">response: </div>
     <button id="isMathFloor" onclick="clickIsMathFloor();">小数点を切り捨てない</button>
 
-    <h2>ジャイロ</h2>
+    <h2>傾き(deg)</h2>
     <div>
         α: <span id="orientationA"></span>
     </div>
@@ -25,7 +25,18 @@
         γ: <span id="orientationC"></span>
     </div>
 
-    <h2>加速度</h2>
+    <h2>角速度(deg/s)</h2>
+    <div>
+        α: <span id="rotationRateA"></span>
+    </div>
+    <div>
+        β: <span id="rotationRateB"></span>
+    </div>
+    <div>
+        γ: <span id="rotationRateC"></span>
+    </div>
+
+    <h2>加速度(G)</h2>
     <div>
         x: <span id="accelerationX"></span>
     </div>
@@ -42,13 +53,18 @@
         <button id="stopRecord" onclick="stopRecord();" disabled>記録終了</button>
     </div>
     <div>
-        ジャイロ記録回数: <span id="orientationCount"></span>
+        傾き記録回数: <span id="orientationCount"></span>
+    </div>
+    <div>
+        角速度記録回数: <span id="rotationRateCount"></span>
     </div>
     <div>
         加速度記録回数: <span id="accelerationCount"></span>
     </div>
     <p></p>
     <div id="orientationChart" style="width: 1280px; height: 720px;"></div>
+    <p></p>
+    <div id="rotationRateChart" style="width: 1280px; height: 720px;"></div>
     <p></p>
     <div id="accelerationChart" style="width: 1280px; height: 720px;"></div>
 
@@ -58,10 +74,16 @@
         var isMathFloor = true;
 
         var isRecord = false;
+
         var orientationChartData;
+        var rotationRateChartData;
         var accelerationChartData;
+
         var orientationCount = 0;
+        var rotationRateCount = 0;
         var accelerationCount = 0;
+
+
 
         //. DeviceOrientationEvent オブジェクトが有効な環境か？　をチェック
         if (window.DeviceOrientationEvent) {
@@ -79,6 +101,7 @@
         }
 
         document.getElementById('orientationCount').textContent = orientationCount;
+        document.getElementById('rotationRateCount').textContent = rotationRateCount;
         document.getElementById('accelerationCount').textContent = accelerationCount;
 
 
@@ -132,6 +155,31 @@
 
         // deviceMotionイベントのハンドラ
         function deviceMotion(event) {
+            // 角速度のデータを取得
+            const rotationRate = event.rotationRate;
+
+            const alpha = rotationRate.alpha;
+            const beta = rotationRate.beta;
+            const gamma = rotationRate.gamma;
+
+            if (isMathFloor) {
+                // 角速度の値を表示
+                document.getElementById('rotationRateA').textContent = Math.floor(alpha);
+                document.getElementById('rotationRateB').textContent = Math.floor(beta);
+                document.getElementById('rotationRateC').textContent = Math.floor(gamma);
+            } else {
+                // 角速度の値を表示
+                document.getElementById('rotationRateX').textContent = alpha;
+                document.getElementById('rotationRateY').textContent = beta;
+                document.getElementById('rotationRateZ').textContent = gamma;
+            }
+
+            if (isRecord) {
+                rotationRateCount++;
+                document.getElementById('rotationRateCount').textContent = rotationRateCount;
+                rotationRateChartData.push([rotationRateCount, alpha, beta, gamma]);
+            }
+
             // 加速度の情報を取得
             const acceleration = event.acceleration;
 
@@ -173,9 +221,11 @@
             document.getElementById("stopRecord").disabled = false;
 
             orientationChartData = [['測定回', 'α', 'β', 'γ']];
+            rotationRateChartData = [['測定回', 'α', 'β', 'γ']];
             accelerationChartData = [['測定回', 'x', 'y', 'z']];
 
             orientationCount = 0;
+            rotationRateCount = 0;
             accelerationCount = 0;
 
             isRecord = true;
@@ -186,7 +236,7 @@
 
             document.getElementById("startRecord").disabled = false;
             document.getElementById("stopRecord").disabled = true;
-            
+
             // name:visualization(可視化),version:バージョン(1),packages:パッケージ(corechart)
             google.load('visualization', '1', { 'packages': ['corechart'] });
             // グラフを描画する為のコールバック関数を指定
@@ -194,8 +244,8 @@
         }
 
         function drawChart(id, dataChart) {
-            const listData = [[orientationChartData, "ジャイロの推移", 'orientationChart'], [accelerationChartData, "加速度の推移", 'accelerationChart']];
-            
+            const listData = [[orientationChartData, "傾きの推移", "傾き(deg)", 'orientationChart'], [rotationRateChartData, "角速度の推移", "角速度(deg/s)", 'rotationRateChart'], [accelerationChartData, "加速度の推移", "加速度(G)", 'accelerationChart']];
+
             for (let i = 0; i < listData.length; ++i) {
                 let data = new google.visualization.arrayToDataTable(listData[i][0]);
 
@@ -206,14 +256,14 @@
                         position: 'top'
                     },
                     vAxis: {
-                        title: '値'
+                        title: listData[i][2]
                     },
                     hAxis: {
                         title: '測定回'
                     }
                 };
 
-                let chart = new google.visualization.LineChart(document.getElementById(listData[i][2]));
+                let chart = new google.visualization.LineChart(document.getElementById(listData[i][3]));
                 chart.draw(data, options);
             }
         }
