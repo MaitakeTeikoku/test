@@ -84,7 +84,7 @@
 
         document.getElementById('orientationCount').textContent = orientationCount;
         document.getElementById('accelerationCount').textContent = accelerationCount;
-
+        
 
 
         function clickRequestDeviceSensor() {
@@ -188,11 +188,12 @@
         function stopRecord() {
             isRecord = false;
 
-            document.getElementById("startRecord").disabled = true;
-            document.getElementById("stopRecord").disabled = false;
-
-            drawChart(orientationChart, orientationChartData);
-            drawChart(accelerationChart, accelerationChartData);
+            document.getElementById("startRecord").disabled = false;
+            document.getElementById("stopRecord").disabled = true;
+            document.getElementById('orientationChart').textContent = orientationChartData;
+            document.getElementById('accelerationChart').textContent = accelerationChartData;
+            drawChart("orientationChart", orientationChartData);
+            drawChart("accelerationChart", accelerationChartData);
         }
 
         function drawChart(id, dataChart) {
