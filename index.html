@@ -69,10 +69,10 @@
                         //. 画面上部のボタンを消す
                         document.getElementById("requestDeviceSensor").disabled = "disabled";
 
-                        document.getElementById('info').textContent = e;
+                        document.getElementById('info').textContent = "response: " + response;
                     }
                 }).catch(function (e) {
-                    document.getElementById('info').textContent = e;
+                    document.getElementById('info').textContent = "e: " + e;
                 });
         }
 
