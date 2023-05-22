@@ -186,8 +186,6 @@
 
             document.getElementById("startRecord").disabled = false;
             document.getElementById("stopRecord").disabled = true;
-            document.getElementById('orientationChart').textContent = orientationChartData;
-            document.getElementById('accelerationChart').textContent = accelerationChartData;
             
             // name:visualization(可視化),version:バージョン(1),packages:パッケージ(corechart)
             google.load('visualization', '1', { 'packages': ['corechart'] });
@@ -196,14 +194,14 @@
         }
 
         function drawChart(id, dataChart) {
-            const listData = [[orientationChartData, 'orientationChart'], [accelerationChartData, 'accelerationChart']];
+            const listData = [[orientationChartData, "ジャイロの推移", 'orientationChart'], [accelerationChartData, "加速度の推移", 'accelerationChart']];
             
             for (let i = 0; i < listData.length; ++i) {
                 let data = new google.visualization.arrayToDataTable(listData[i][0]);
 
                 // オプションの設定
                 let options = {
-                    title: "ジャイロと加速度の推移",
+                    title: listData[i][1],
                     legend: {
                         position: 'top'
                     },
@@ -215,7 +213,7 @@
                     }
                 };
 
-                let chart = new google.visualization.LineChart(document.getElementById(listData[i][1]));
+                let chart = new google.visualization.LineChart(document.getElementById(listData[i][2]));
                 chart.draw(data, options);
             }
         }
