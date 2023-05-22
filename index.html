@@ -84,7 +84,7 @@
 
         document.getElementById('orientationCount').textContent = orientationCount;
         document.getElementById('accelerationCount').textContent = accelerationCount;
-        
+
 
 
         function clickRequestDeviceSensor() {
@@ -192,29 +192,36 @@
             document.getElementById("stopRecord").disabled = true;
             document.getElementById('orientationChart').textContent = orientationChartData;
             document.getElementById('accelerationChart').textContent = accelerationChartData;
-            drawChart("orientationChart", orientationChartData);
-            drawChart("accelerationChart", accelerationChartData);
+            
+            // name:visualization(可視化),version:バージョン(1),packages:パッケージ(corechart)
+            google.load('visualization', '1', { 'packages': ['corechart'] });
+            // グラフを描画する為のコールバック関数を指定
+            google.setOnLoadCallback(drawChart);
         }
 
         function drawChart(id, dataChart) {
-            const data = new google.visualization.arrayToDataTable(dataChart);
+            const listData = [[orientationChartData, 'orientationChart'], [accelerationChartData, 'accelerationChart']];
+            
+            for (let i = 0; i < listData.length; ++i) {
+                let data = new google.visualization.arrayToDataTable(listData[i][0]);
 
-            // オプションの設定
-            const options = {
-                title: "ジャイロと加速度の推移",
-                legend: {
-                    position: 'top'
-                },
-                vAxis: {
-                    title: '値'
-                },
-                hAxis: {
-                    title: '測定回'
-                }
-            };
+                // オプションの設定
+                let options = {
+                    title: "ジャイロと加速度の推移",
+                    legend: {
+                        position: 'top'
+                    },
+                    vAxis: {
+                        title: '値'
+                    },
+                    hAxis: {
+                        title: '測定回'
+                    }
+                };
 
-            const chart = new google.visualization.LineChart(document.getElementById(id));
-            chart.draw(data, options);
+                let chart = new google.visualization.LineChart(document.getElementById(listData[i][1]));
+                chart.draw(data, options);
+            }
         }
 
     </script>
