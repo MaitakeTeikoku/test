@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>test</title>
 
     <style>
@@ -13,7 +17,6 @@
     <button id="requestDeviceSensor" onclick="clickRequestDeviceSensor();">センサーの有効化</button>
     <div id="info">response: </div>
     <button id="isMathFloor" onclick="clickIsMathFloor();">小数点を切り捨てない</button>
-    
 
     <h2>ジャイロ</h2>
     <div>
@@ -37,10 +40,32 @@
         z: <span id="accelerationZ"></span>
     </div>
 
+    <p></p>
+    <div>
+        <button id="startRecord" onclick="startRecord();" disabled>記録開始</button>
+        <button id="stopRecord" onclick="stopRecord();" disabled>記録終了</button>
+    </div>
+    <div>
+        ジャイロ記録回数: <span id="orientationCount"></span>
+    </div>
+    <div>
+        加速度記録回数: <span id="accelerationCount"></span>
+    </div>
+    <p></p>
+    <div id="orientationChart"></div>
+    <p></p>
+    <div id="accelerationChart"></div>
+
 
 
     <script>
         var isMathFloor = true;
+
+        var isRecord = false;
+        var orientationChartData;
+        var accelerationChartData;
+        var orientationCount = 0;
+        var accelerationCount = 0;
 
         //. DeviceOrientationEvent オブジェクトが有効な環境か？　をチェック
         if (window.DeviceOrientationEvent) {
@@ -57,6 +82,9 @@
             }
         }
 
+        document.getElementById('orientationCount').textContent = orientationCount;
+        document.getElementById('accelerationCount').textContent = accelerationCount;
+
 
 
         function clickRequestDeviceSensor() {
@@ -68,8 +96,8 @@
                         window.addEventListener("deviceorientation", deviceOrientation);
                         window.addEventListener('devicemotion', deviceMotion);
                         //. 画面上部のボタンを消す
-                        document.getElementById("requestDeviceSensor").disabled = "disabled";
-
+                        document.getElementById("requestDeviceSensor").disabled = true;
+                        document.getElementById("startRecord").disabled = false;
                         document.getElementById('info').textContent = "response: " + response;
                     }
                 }).catch(function (e) {
@@ -99,6 +127,11 @@
                 document.getElementById('orientationC').textContent = gamma;
             }
 
+            if (isRecord) {
+                orientationCount++;
+                document.getElementById('orientationCount').textContent = orientationCount;
+                orientationChartData.push([orientationCount, alpha, beta, gamma]);
+            }
         }
 
         // deviceMotionイベントのハンドラ
@@ -121,6 +154,12 @@
                 document.getElementById('accelerationY').textContent = y;
                 document.getElementById('accelerationZ').textContent = z;
             }
+
+            if (isRecord) {
+                accelerationCount++;
+                document.getElementById('accelerationCount').textContent = accelerationCount;
+                accelerationChartData.push([accelerationCount, x, y, z]);
+            }
         }
 
         function clickIsMathFloor() {
@@ -131,6 +170,50 @@
                 document.getElementById('isMathFloor').textContent = "小数点を切り捨てない";
                 isMathFloor = true;
             }
+        }
+
+        function startRecord() {
+            document.getElementById("startRecord").disabled = true;
+            document.getElementById("stopRecord").disabled = false;
+
+            orientationChartData = [['測定回', 'α', 'β', 'γ']];
+            accelerationChartData = [['測定回', 'x', 'y', 'z']];
+
+            orientationCount = 0;
+            accelerationCount = 0;
+
+            isRecord = true;
+        }
+
+        function stopRecord() {
+            isRecord = false;
+
+            document.getElementById("startRecord").disabled = true;
+            document.getElementById("stopRecord").disabled = false;
+
+            drawChart(orientationChart, orientationChartData);
+            drawChart(accelerationChart, accelerationChartData);
+        }
+
+        function drawChart(id, dataChart) {
+            const data = new google.visualization.arrayToDataTable(dataChart);
+
+            // オプションの設定
+            const options = {
+                title: "ジャイロと加速度の推移",
+                legend: {
+                    position: 'top'
+                },
+                vAxis: {
+                    title: '値'
+                },
+                hAxis: {
+                    title: '測定回'
+                }
+            };
+
+            const chart = new google.visualization.LineChart(document.getElementById(id));
+            chart.draw(data, options);
         }
 
     </script>
