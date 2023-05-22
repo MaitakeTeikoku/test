@@ -2,50 +2,44 @@
 <html>
 
 <head>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <title>test</title>
 
-    <title>Accelerometer and Orientation</title>
     <style>
-        #acceleration {
-            font-size: 20px;
-        }
 
-        #orientation {
-            font-size: 20px;
-        }
-
-        #sensorRequest {
-            z-index: 1;
-            width: 100%;
-            background-color: rgb(250, 250, 250);
-        }
     </style>
 </head>
 
 <body>
-    <h1>Accelerometer and Orientation</h1>
+    <button id="requestDeviceSensor" onclick="clickRequestDeviceSensor();">センサーの有効化</button>
+    <button id="isMathFloor" onclick="clickIsMathFloor();">小数点を切り捨てない</button>
+    <div id="info"></div>
 
-    <button id="sensorRequest" onclick="ClickRequestDeviceSensor();">センサーの有効化</button>
+    <h2>ジャイロ</h2>
+    <div>
+        α: <span id="orientationA"></span>
+    </div>
+    <div>
+        β: <span id="orientationB"></span>
+    </div>
+    <div>
+        γ: <span id="orientationC"></span>
+    </div>
 
-    <p id="acceleration">Acceleration: <span id="acceleration-values"></span></p>
-    <p id="orientation">Orientation: <span id="orientation-values"></span></p>
+    <h2>加速度</h2>
+    <div>
+        x: <span id="accelerationX"></span>
+    </div>
+    <div>
+        y: <span id="accelerationY"></span>
+    </div>
+    <div>
+        z: <span id="accelerationZ"></span>
+    </div>
+
+
 
     <script>
-        function ClickRequestDeviceSensor() {
-            //. ユーザーに「許可」を求めるダイアログを表示
-            DeviceOrientationEvent.requestPermission()
-                .then(function (response) {
-                    if (response === 'granted') {
-                        //. 許可された場合のみイベントハンドラを追加できる
-                        window.addEventListener("deviceorientation", deviceOrientation);
-                        window.addEventListener('devicemotion', handleMotion);
-                        //. 画面上部のボタンを消す
-                        document.getElementById("sensorRequest").style.display = "none";
-                    }
-                }).catch(function (e) {
-                    console.log(e);
-                });
-        }
+        var isMathFloor = true;
 
         //. DeviceOrientationEvent オブジェクトが有効な環境か？　をチェック
         if (window.DeviceOrientationEvent) {
@@ -53,36 +47,89 @@
             if (DeviceOrientationEvent.requestPermission && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 //. iOS 13 以上の場合、
                 //. 画面上部に「センサーの有効化」ボタンを表示
-                document.getElementById("sensorRequest").style.display = "block";
+                document.getElementById("requestDeviceSensor").style.display = "block";
             } else {
                 //. Android または iOS 13 未満の場合、
                 //. DeviceOrientationEvent オブジェクトが有効な場合のみ、deviceorientation イベント発生時に deviceOrientaion 関数がハンドリングするよう登録
                 window.addEventListener("deviceorientation", deviceOrientation);
-                window.addEventListener('devicemotion', handleMotion);
+                window.addEventListener('devicemotion', deviceMotion);
             }
         }
 
-        //. deviceorientation イベントハンドラ
-        function deviceOrientation(e) {
-            //. 通常の処理を無効にする
-            e.preventDefault();
 
-            // 傾きの情報を取得
-            var alpha = event.alpha;
-            var beta = event.beta;
-            var gamma = event.gamma;
 
-            // 傾きの値を表示
-            document.getElementById('orientation-values').textContent = 'alpha: ' + alpha + ', beta: ' + beta + ', gamma: ' + gamma;
+        function clickRequestDeviceSensor() {
+            //. ユーザーに「許可」を求めるダイアログを表示
+            DeviceOrientationEvent.requestPermission()
+                .then(function (response) {
+                    if (response === 'granted') {
+                        //. 許可された場合のみイベントハンドラを追加できる
+                        window.addEventListener("deviceorientation", deviceOrientation);
+                        window.addEventListener('devicemotion', deviceMotion);
+                        //. 画面上部のボタンを消す
+                        document.getElementById("requestDeviceSensor").disabled = "disabled";
+
+                        document.getElementById('info').textContent = e;
+                    }
+                }).catch(function (e) {
+                    document.getElementById('info').textContent = e;
+                });
         }
 
-        // DeviceMotionイベントのハンドラー
-        function handleMotion(event) {
-            // 加速度の情報を取得
-            var acceleration = event.acceleration;
+        //. deviceorientation イベントハンドラ
+        function deviceOrientation(event) {
+            //. 通常の処理を無効にする
+            event.preventDefault();
 
-            // 加速度の値を表示
-            document.getElementById('acceleration-values').textContent = 'x: ' + acceleration.x + ', y: ' + acceleration.y + ', z: ' + acceleration.z;
+            // 傾きの情報を取得
+            const alpha = event.alpha;
+            const beta = event.beta;
+            const gamma = event.gamma;
+
+            if (isMathFloor) {
+                // 傾きの値を表示
+                document.getElementById('orientationA').textContent = Math.floor(alpha);
+                document.getElementById('orientationB').textContent = Math.floor(beta);
+                document.getElementById('orientationC').textContent = Math.floor(gamma);
+            } else {
+                // 傾きの値を表示
+                document.getElementById('orientationA').textContent = alpha;
+                document.getElementById('orientationB').textContent = beta;
+                document.getElementById('orientationC').textContent = gamma;
+            }
+
+        }
+
+        // deviceMotionイベントのハンドラ
+        function deviceMotion(event) {
+            // 加速度の情報を取得
+            const acceleration = event.acceleration;
+
+            const x = acceleration.x;
+            const y = acceleration.y;
+            const z = acceleration.z;
+
+            if (isMathFloor) {
+                // 加速度の値を表示
+                document.getElementById('accelerationX').textContent = Math.floor(x);
+                document.getElementById('accelerationY').textContent = Math.floor(y);
+                document.getElementById('accelerationZ').textContent = Math.floor(z);
+            } else {
+                // 加速度の値を表示
+                document.getElementById('accelerationX').textContent = x;
+                document.getElementById('accelerationY').textContent = y;
+                document.getElementById('accelerationZ').textContent = z;
+            }
+        }
+
+        function clickIsMathFloor() {
+            if (isMathFloor) {
+                document.getElementById('isMathFloor').textContent = "小数点を切り捨て";
+                isMathFloor = false;
+            } else {
+                document.getElementById('isMathFloor').textContent = "小数点を切り捨てない";
+                isMathFloor = true;
+            }
         }
 
     </script>
