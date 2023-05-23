@@ -18,6 +18,8 @@
 <body>
     <button id="requestDeviceSensor" onclick="clickRequestDeviceSensor();">センサーの有効化</button>
     <div id="info">response: </div>
+
+    <p></p>
     <button id="isMathFloor" onclick="clickIsMathFloor();">小数点を切り捨てない</button>
 
     <h2>傾き(deg)</h2>
@@ -54,10 +56,16 @@
     </div>
 
     <p></p>
-    <div>
-        <button id="startRecord" onclick="startRecord();" disabled>記録開始</button>
-        <button id="stopRecord" onclick="stopRecord();" disabled>記録終了</button>
-    </div>
+    <form>
+        角速度と加速度の記録頻度： <input type="text" id="intervalInput" pattern="^([1-9][0-9]*|0)$" title="0以上の整数"> ms
+        現在の角速度と加速度の記録頻度： <span id="intervalSpan"> ms
+            <p></p>
+            <input type="submit" id="startRecord" onclick="startRecord();" value="記録開始">
+    </form>
+    <p></p>
+    <button id="stopRecord" onclick="stopRecord();" disabled>記録終了</button>
+
+    <p></p>
     <div>
         　傾き記録回数: <span id="orientationCount"></span>
     </div>
@@ -87,6 +95,8 @@
 
         var orientationCount = 0;
         var motionCount = 0;
+
+        var interval;
 
 
 
@@ -168,7 +178,11 @@
 
         // deviceMotionイベントのハンドラ
         function deviceMotion(event) {
-            document.getElementById('info').textContent = "interval: " + event.interval;
+            if (motionCount == 0 && interval != "") {
+                event.interval = interval;
+            }
+            document.getElementById('intervalSpan').textContent = event.interval;
+
             // 角速度のデータを取得
             const rotationRate = event.rotationRate;
 
@@ -239,6 +253,8 @@
         function startRecord() {
             document.getElementById("startRecord").disabled = true;
             document.getElementById("stopRecord").disabled = false;
+
+            interval = document.getElementById("intervalInput").value;
 
             orientationChartData = [['測定回', 'α', 'β', 'γ']];
             rotationRateChartData = [['測定回', 'α', 'β', 'γ']];
