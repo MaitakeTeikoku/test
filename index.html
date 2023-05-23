@@ -86,8 +86,7 @@
         var accelerationChartData;
 
         var orientationCount = 0;
-        var rotationRateCount = 0;
-        var accelerationCount = 0;
+        var motionCount = 0;
 
 
 
@@ -107,8 +106,8 @@
         }
 
         document.getElementById('orientationCount').textContent = orientationCount;
-        document.getElementById('rotationRateCount').textContent = rotationRateCount;
-        document.getElementById('accelerationCount').textContent = accelerationCount;
+        document.getElementById('rotationRateCount').textContent = motionCount;
+        document.getElementById('accelerationCount').textContent = motionCount;
 
 
 
@@ -169,6 +168,7 @@
 
         // deviceMotionイベントのハンドラ
         function deviceMotion(event) {
+            document.getElementById('info').textContent = "interval: " + event.interval;
             // 角速度のデータを取得
             const rotationRate = event.rotationRate;
 
@@ -206,19 +206,19 @@
             }
 
             if (isRecord) {
+                motionCount++;
+
                 // 角速度の記録回数更新
-                rotationRateCount++;
-                document.getElementById('rotationRateCount').textContent = rotationRateCount;
+                document.getElementById('rotationRateCount').textContent = motionCount;
 
                 // 加速度の記録回数更新
-                accelerationCount++;
-                document.getElementById('accelerationCount').textContent = accelerationCount;
+                document.getElementById('accelerationCount').textContent = motionCount;
 
                 try {
                     // 角速度の記録
-                    rotationRateChartData.push([rotationRateCount, alpha, beta, gamma]);
+                    rotationRateChartData.push([motionCount, alpha, beta, gamma]);
                     // 加速度の記録
-                    accelerationChartData.push([accelerationCount, x, y, z]);
+                    accelerationChartData.push([motionCount, x, y, z]);
                 } catch (e) {
                     stopRecord();
                     document.getElementById('info').textContent = "e: " + e;
@@ -245,8 +245,7 @@
             accelerationChartData = [['測定回', 'x', 'y', 'z']];
 
             orientationCount = 0;
-            rotationRateCount = 0;
-            accelerationCount = 0;
+            motionCount = 0;
 
             isRecord = true;
         }
