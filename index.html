@@ -116,6 +116,8 @@
             //. ユーザーに「許可」を求めるダイアログを表示
             DeviceOrientationEvent.requestPermission()
                 .then(function (response) {
+                    document.getElementById('info').textContent = "response: " + response;
+
                     if (response === 'granted') {
                         //. 許可された場合のみイベントハンドラを追加できる
                         window.addEventListener("deviceorientation", deviceOrientation);
@@ -123,7 +125,6 @@
                         //. 画面上部のボタンを消す
                         document.getElementById("requestDeviceSensor").disabled = true;
                         document.getElementById("startRecord").disabled = false;
-                        document.getElementById('info').textContent = "response: " + response;
                     }
                 }).catch(function (e) {
                     document.getElementById('info').textContent = "e: " + e;
@@ -153,9 +154,16 @@
             }
 
             if (isRecord) {
+                // 傾きの記録回数更新
                 orientationCount++;
                 document.getElementById('orientationCount').textContent = orientationCount;
-                orientationChartData.push([orientationCount, alpha, beta, gamma]);
+                try {
+                    // 傾きの記録
+                    orientationChartData.push([orientationCount, alpha, beta, gamma]);
+                } catch (e) {
+                    stopRecord();
+                    document.getElementById('info').textContent = "e: " + e;
+                }
             }
         }
 
@@ -168,24 +176,6 @@
             const beta = rotationRate.beta;
             const gamma = rotationRate.gamma;
 
-            if (isMathFloor) {
-                // 角速度の値を表示
-                document.getElementById('rotationRateA').textContent = Math.floor(alpha);
-                document.getElementById('rotationRateB').textContent = Math.floor(beta);
-                document.getElementById('rotationRateC').textContent = Math.floor(gamma);
-            } else {
-                // 角速度の値を表示
-                document.getElementById('rotationRateA').textContent = alpha;
-                document.getElementById('rotationRateB').textContent = beta;
-                document.getElementById('rotationRateC').textContent = gamma;
-            }
-
-            if (isRecord) {
-                rotationRateCount++;
-                document.getElementById('rotationRateCount').textContent = rotationRateCount;
-                rotationRateChartData.push([rotationRateCount, alpha, beta, gamma]);
-            }
-
             // 加速度の情報を取得
             const acceleration = event.acceleration;
 
@@ -194,11 +184,21 @@
             const z = acceleration.z;
 
             if (isMathFloor) {
+                // 角速度の値を表示
+                document.getElementById('rotationRateA').textContent = Math.floor(alpha);
+                document.getElementById('rotationRateB').textContent = Math.floor(beta);
+                document.getElementById('rotationRateC').textContent = Math.floor(gamma);
+
                 // 加速度の値を表示
                 document.getElementById('accelerationX').textContent = Math.floor(x);
                 document.getElementById('accelerationY').textContent = Math.floor(y);
                 document.getElementById('accelerationZ').textContent = Math.floor(z);
             } else {
+                // 角速度の値を表示
+                document.getElementById('rotationRateA').textContent = alpha;
+                document.getElementById('rotationRateB').textContent = beta;
+                document.getElementById('rotationRateC').textContent = gamma;
+
                 // 加速度の値を表示
                 document.getElementById('accelerationX').textContent = x;
                 document.getElementById('accelerationY').textContent = y;
@@ -206,9 +206,23 @@
             }
 
             if (isRecord) {
+                // 角速度の記録回数更新
+                rotationRateCount++;
+                document.getElementById('rotationRateCount').textContent = rotationRateCount;
+
+                // 加速度の記録回数更新
                 accelerationCount++;
                 document.getElementById('accelerationCount').textContent = accelerationCount;
-                accelerationChartData.push([accelerationCount, x, y, z]);
+
+                try {
+                    // 角速度の記録
+                    rotationRateChartData.push([rotationRateCount, alpha, beta, gamma]);
+                    // 加速度の記録
+                    accelerationChartData.push([accelerationCount, x, y, z]);
+                } catch (e) {
+                    stopRecord();
+                    document.getElementById('info').textContent = "e: " + e;
+                }
             }
         }
 
@@ -250,7 +264,11 @@
         }
 
         function drawChart(id, dataChart) {
-            const listData = [[orientationChartData, "傾きの推移", "傾き(deg)", 'orientationChart'], [rotationRateChartData, "角速度の推移", "角速度(deg/s)", 'rotationRateChart'], [accelerationChartData, "加速度の推移", "加速度(G)", 'accelerationChart']];
+            const listData = [
+                [orientationChartData, "傾きの推移", "傾き(deg)", 'orientationChart'],
+                [rotationRateChartData, "角速度の推移", "角速度(deg/s)", 'rotationRateChart'],
+                [accelerationChartData, "加速度の推移", "加速度(G)", 'accelerationChart']
+            ];
 
             for (let i = 0; i < listData.length; ++i) {
                 let data = new google.visualization.arrayToDataTable(listData[i][0]);
@@ -273,7 +291,6 @@
                 chart.draw(data, options);
             }
         }
-
     </script>
 </body>
 
