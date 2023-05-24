@@ -156,7 +156,7 @@
                 }
             }
             // alphaの値を回転数を考慮して補正する
-            const adjustedAlpha = alpha + rotationCount * 360;
+            const adjustedAlpha = alpha + rotationCountAlpha * 360;
             // 前回のalphaの値を更新する
             previousAlpha = alpha;
 
@@ -169,7 +169,7 @@
                 }
             }
             // betaの値を回転数を考慮して補正する
-            const adjustedBeta = beta + rotationCount * 360;
+            const adjustedBeta = beta + rotationCountBeta * 360;
             // 前回のbetaの値を更新する
             previousBeta = beta;
 
@@ -182,7 +182,7 @@
                 }
             }
             // gammaの値を回転数を考慮して補正する
-            const adjustedGamma = gamma + rotationCount * 360;
+            const adjustedGamma = gamma + rotationCountGamma * 360;
             // 前回のgammaの値を更新する
             previousGamma = gamma;
             
