@@ -88,6 +88,13 @@
         var orientationCount = 0;
         var motionCount = 0;
 
+        var previousAlpha = null; // 前回のalphaの値を保持する変数
+        var rotationCountAlpha = 0; // 回転数をカウントする変数
+        var previousBeta = null; // 前回のbetaの値を保持する変数
+        var rotationCountBeta = 0; // 回転数をカウントする変数
+        var previousGamma = null; // 前回のgammaの値を保持する変数
+        var rotationCountGamma = 0; // 回転数をカウントする変数
+
 
 
         //. DeviceOrientationEvent オブジェクトが有効な環境か？　をチェック
@@ -140,16 +147,55 @@
             const beta = event.beta;
             const gamma = event.gamma;
 
+            // 前回のalphaの値が存在し、現在のalphaが0に近い場合の処理
+            if (previousAlpha !== null && Math.abs(alpha - previousAlpha) > 180) {
+                if (alpha < previousAlpha) {
+                    rotationCountAlpha++;
+                } else {
+                    rotationCountAlpha--;
+                }
+            }
+            // alphaの値を回転数を考慮して補正する
+            const adjustedAlpha = alpha + rotationCount * 360;
+            // 前回のalphaの値を更新する
+            previousAlpha = alpha;
+
+            // 前回のbetaの値が存在し、現在のbetaが0に近い場合の処理
+            if (previousBeta !== null && Math.abs(beta - previousBeta) > 180) {
+                if (beta < previousBeta) {
+                    rotationCountBeta++;
+                } else {
+                    rotationCountBeta--;
+                }
+            }
+            // betaの値を回転数を考慮して補正する
+            const adjustedBeta = beta + rotationCount * 360;
+            // 前回のbetaの値を更新する
+            previousBeta = beta;
+
+            // 前回のgammaの値が存在し、現在のgammaが0に近い場合の処理
+            if (previousGamma !== null && Math.abs(gamma - previousGamma) > 180) {
+                if (gamma < previousGamma) {
+                    rotationCountGamma++;
+                } else {
+                    rotationCountGamma--;
+                }
+            }
+            // gammaの値を回転数を考慮して補正する
+            const adjustedGamma = gamma + rotationCount * 360;
+            // 前回のgammaの値を更新する
+            previousGamma = gamma;
+            
             if (isMathFloor) {
                 // 傾きの値を表示
-                document.getElementById('orientationA').textContent = Math.floor(alpha);
-                document.getElementById('orientationB').textContent = Math.floor(beta);
-                document.getElementById('orientationC').textContent = Math.floor(gamma);
+                document.getElementById('orientationA').textContent = Math.floor(adjustedAlpha);
+                document.getElementById('orientationB').textContent = Math.floor(adjustedBeta);
+                document.getElementById('orientationC').textContent = Math.floor(adjustedGamma);
             } else {
                 // 傾きの値を表示
-                document.getElementById('orientationA').textContent = alpha;
-                document.getElementById('orientationB').textContent = beta;
-                document.getElementById('orientationC').textContent = gamma;
+                document.getElementById('orientationA').textContent = adjustedAlpha;
+                document.getElementById('orientationB').textContent = adjustedBeta;
+                document.getElementById('orientationC').textContent = adjustedGamma;
             }
 
             if (isRecord) {
@@ -158,7 +204,7 @@
                 document.getElementById('orientationCount').textContent = orientationCount;
                 try {
                     // 傾きの記録
-                    orientationChartData.push([orientationCount, alpha, beta, gamma]);
+                    orientationChartData.push([orientationCount, adjustedAlpha, adjustedBeta, adjustedGamma]);
                 } catch (e) {
                     stopRecord();
                     document.getElementById('info').textContent = "e: " + e;
@@ -206,7 +252,7 @@
 
             if (isRecord) {
                 motionCount++;
-                
+
                 // 角速度の記録回数更新
                 document.getElementById('rotationRateCount').textContent = motionCount;
 
