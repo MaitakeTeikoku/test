@@ -1,19 +1,27 @@
-<html>
-<head>
-<title>PyScript + OpenCV</title>
-</head>
-<body>
-<script src="https://pyscript.net/dist/pyscript.min.js"></script>
-<script>
-import cv2
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-# 画像を読み込む
-img = cv2.imread("./maitake_white.png")
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <py-env>
+            - OpenCV
+        </py-env>
+        
+        <title>pyscript</title>
+    </head>
 
-# 画像を表示する
-cv2.imshow("Image", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-</script>
-</body>
+    <body>
+        
+        <py-config>
+            [[fetch]]
+            files = ["./index.py"]
+        </py-config>
+        <py-script src="./index.py"></py-script>
+        
+    </body>
+
 </html>
