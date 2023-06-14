@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>PyScriptでOpenCVを使用する</title>
+<title>PyScript + OpenCV</title>
 </head>
 <body>
-<script src="https://pyscript.org/dist/pyscript.js"></script>
+<script src="https://pyscript.net/dist/pyscript.min.js"></script>
 <script>
-pyscript.init();
-
 import cv2
 
 # 画像を読み込む
@@ -16,11 +12,7 @@ img = cv2.imread("image.png")
 
 # 画像を表示する
 cv2.imshow("Image", img)
-
-# キー入力を待つ
 cv2.waitKey(0)
-
-# ウィンドウを閉じる
 cv2.destroyAllWindows()
 </script>
 </body>
