@@ -5,23 +5,14 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-        <py-env>
-            - OpenCV
-        </py-env>
-        
-        <title>pyscript</title>
+        <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+        <title>cv</title>
     </head>
 
     <body>
-        
-        <py-config>
-            [[fetch]]
-            files = ["./index.py"]
-        </py-config>
-        <py-script src="./index.py"></py-script>
-        
+        <video id="videoElement" width="640" height="480" autoplay></video>
+
+        <script src="./index.js"></script>
     </body>
 
 </html>
