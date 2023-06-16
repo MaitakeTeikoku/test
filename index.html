@@ -4,15 +4,22 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
-        <title>cv</title>
+        
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        
+        <title>pyscript</title>
     </head>
 
     <body>
-        <video id="videoElement" width="640" height="480" autoplay></video>
-
-        <script src="./index.js"></script>
+        
+        <py-config>
+            packages = ["opencv-python"]
+            [[fetch]]
+            files = ["./index.py"]
+        </py-config>
+        <py-script src="./index.py"></py-script>
+        
     </body>
 
 </html>
