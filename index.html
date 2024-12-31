@@ -2,19 +2,46 @@
 <html lang="ja">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Cache-Control" content="no-cache">
-    <title>React Tutorial</title>
-    
+  <meta charset="UTF-8">
 </head>
 
 <body>
-    <!-- Reactの描画対象を準備しておく -->
-    <div id="ipAddress">ipAddress</div>
-    <div id="ipPattern">ipPattern</div>
-    <div id="result">result</div>
+  <input type="text" id="input" />
+  <button id="sendGet">GETリクエスト</button>
+  <button id="sendPost">POSTリクエスト</button>
+  <p id="output"></p>
 
-    <script src="main.js"></script>
+  <script>
+    const url = "https://script.google.com/macros/s/AKfycbw3qthuJ3Qo8UppFzBwscBDuQbY3hfsXNS_eTeQZtxu6LajXMME0I9k0qV5Uw4HJHE/exec";
+    const input = document.getElementById('input');
+    const sendGet = document.getElementById('sendGet');
+    const sendPost = document.getElementById('sendPost');
+    const output = document.getElementById('output');
+
+    // GETリクエストボタンがクリックされたときの処理
+    sendGet.addEventListener('click', async () => {
+      const response = await fetch(`${url}?user=${input.value}`);
+      const json = await response.json();
+      output.textContent = String(json);
+    });
+
+    // POSTリクエストボタンがクリックされたときの処理
+    sendPost.addEventListener('click', async () => {
+      const data = {
+        user: input.value
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }
+      const response = await fetch(url, options);
+      const json = await response.json();
+      output.textContent = String(json);
+    });
+  </script>
 </body>
 
 </html>
