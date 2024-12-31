@@ -22,7 +22,7 @@
     sendGet.addEventListener('click', async () => {
       const response = await fetch(`${url}?user=${input.value}`);
       const json = await response.json();
-      output.textContent = String(json);
+      output.textContent = JSON.stringify(json);
     });
 
     // POSTリクエストボタンがクリックされたときの処理
@@ -39,7 +39,7 @@
       }
       const response = await fetch(url, options);
       const json = await response.json();
-      output.textContent = String(json);
+      output.textContent = JSON.stringify(json);
     });
   </script>
 </body>
