@@ -20,7 +20,7 @@
 
     // GETリクエストボタンがクリックされたときの処理
     sendGet.addEventListener('click', async () => {
-      const response = await fetch(`${url}?user=${input.value}`);
+      const response = await fetch(`${url}?user=${encodeURIComponent(input.value)}`);
       const json = await response.json();
       output.textContent = JSON.stringify(json);
     });
@@ -35,7 +35,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        payload: JSON.stringify(data)
       }
       const response = await fetch(url, options);
       const json = await response.json();
