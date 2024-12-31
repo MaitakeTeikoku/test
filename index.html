@@ -12,7 +12,7 @@
   <p id="output"></p>
 
   <script>
-    const url = "https://script.google.com/macros/s/AKfycbyZghkre72yQHesserbSYrj-pNOOc53Wt3bIBiVtTjOLUa-Mfw1tBG5Ae0gdlHuTJA/exec";
+    const url = "https://script.google.com/macros/s/AKfycbyemgU64hXl62H9ymy7rjW9yiac5e8DRpqZlvyRFQhXlwXNwWM5oQ5wGPc3Bw2sqXk/exec";
     const input = document.getElementById('input');
     const sendGet = document.getElementById('sendGet');
     const sendPost = document.getElementById('sendPost');
@@ -27,15 +27,12 @@
 
     // POSTリクエストボタンがクリックされたときの処理
     sendPost.addEventListener('click', async () => {
-      const data = {
-        user: input.value
-      };
       const options = {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify(data)
+        body: `user=${input.value}`
       };
       const response = await fetch(url, options);
       const json = await response.json();
