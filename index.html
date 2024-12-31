@@ -12,7 +12,7 @@
   <p id="output"></p>
 
   <script>
-    const url = "https://script.google.com/macros/s/AKfycbzQzh3W7PRM0TUKKPEpjQNo_84S-4WBCjA49PhZNBeOqUrLLpfQC2tBdJAFigOi25M/exec";
+    const url = "https://script.google.com/macros/s/AKfycbyZghkre72yQHesserbSYrj-pNOOc53Wt3bIBiVtTjOLUa-Mfw1tBG5Ae0gdlHuTJA/exec";
     const input = document.getElementById('input');
     const sendGet = document.getElementById('sendGet');
     const sendPost = document.getElementById('sendPost');
@@ -29,14 +29,14 @@
     sendPost.addEventListener('click', async () => {
       const data = {
         user: input.value
-      }
+      };
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        payload: JSON.stringify(data)
-      }
+        body: JSON.stringify(data)
+      };
       const response = await fetch(url, options);
       const json = await response.json();
       output.textContent = JSON.stringify(json);
